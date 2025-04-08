@@ -27,7 +27,7 @@ class MailService {
         try {
             const info = await this.transporter.sendMail(mailOptions);
             console.log('Message sent: %s', info.messageId);
-            return info; 
+            return info;
         } catch (error) {
             console.error('Error sending email:', error);
             throw error;

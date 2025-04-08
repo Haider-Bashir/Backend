@@ -7,7 +7,7 @@ const router = express.Router();
 const path = require("path");
 const fs = require("fs");
 const { protect } = require("../middleware/authMiddleware");
-const Branch = require("../models/Branch");
+const Branch = require("../models/branch");
 
 // Configure Storage for Image Uploads
 const imageStorage = multer.diskStorage({

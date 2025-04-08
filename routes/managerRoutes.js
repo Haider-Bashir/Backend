@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const Branch = require("../models/Branch");
+const Branch = require("../models/branch");
 
 const router = express.Router();
 

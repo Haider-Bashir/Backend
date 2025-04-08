@@ -1,10 +1,9 @@
 const express = require('express');
-const Branch = require('../models/Branch');
+const Branch = require('../models/branch');
 const Applicant = require('../models/Applicant');
 const Payment = require('../models/Payment');
-const User = require('../models/User');
+const User = require('../models/user');
 const { protect } = require('../middleware/authMiddleware');
-const mongoose = require('mongoose');
 const router = express.Router();
 
 // Get stats for the manager's branch

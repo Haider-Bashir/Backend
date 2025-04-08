@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const Branch = require("../models/Branch");
-const User = require("../models/User");
+const Branch = require("../models/branch");
+const User = require("../models/user");
 const Applicant = require("../models/Applicant");
 
 // Import authentication middleware

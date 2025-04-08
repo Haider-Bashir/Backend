@@ -1,5 +1,5 @@
-const User = require("../models/User");
-const Branch = require("../models/Branch");
+const User = require("../models/user");
+const Branch = require("../models/branch");
 const generateToken = require("../utils/generateToken");
 const MailService = require('./../utils/MailService')
 
