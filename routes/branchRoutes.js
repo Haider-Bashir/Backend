@@ -123,9 +123,10 @@ router.delete("/:id", async (req, res) => {
             return res.status(404).json({ message: "Branch not found" });
         }
 
-        await branch.remove();
+        await branch.deleteOne();
         res.status(200).json({ message: "Branch deleted successfully" });
     } catch (error) {
+        console.log(error.message);
         res.status(500).json({ message: error.message });
     }
 });
