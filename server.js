@@ -58,5 +58,5 @@ app.use("/api/stats", statRoutes)
 app.use("/public", express.static(path.join(__dirname, "public")));
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
