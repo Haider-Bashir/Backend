@@ -2,13 +2,13 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const Branch = require("../models/branch");
-const { uploadSingle, uploadToCloudinary } = require("../middleware/uploadMiddleware");
+const { uploadToCloudinary } = require("../middleware/uploadMiddleware");
 const Payment = require("../models/Payment");
 const Applicant = require("../models/Applicant");
 
 // @desc    Add new branch
 // @route   POST /api/branches
-router.post("/", uploadSingle, uploadToCloudinary, async (req, res) => {
+router.post("/", uploadToCloudinary, async (req, res) => {
     try {
         const { name, city, phoneNumber } = req.body;
         if (!name || !city) {
@@ -89,7 +89,7 @@ router.put("/:id/assignManager", async (req, res) => {
 
 // @desc    Edit branch details
 // @route   PUT /api/branches/:id
-router.put("/:id", uploadSingle, uploadToCloudinary, async (req, res) => {
+router.put("/:id", uploadToCloudinary, async (req, res) => {
     try {
         const { name, city, phoneNumber } = req.body;
         const branch = await Branch.findById(req.params.id);
