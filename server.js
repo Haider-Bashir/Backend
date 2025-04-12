@@ -35,6 +35,7 @@ app.use(
   })
 );
 
+app.options('*', cors());
 
 app.use(express.urlencoded({ extended: true }));
 
