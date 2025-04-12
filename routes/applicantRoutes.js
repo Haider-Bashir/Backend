@@ -236,11 +236,13 @@ router.put("/:id/education", async (req, res) => {
     }
 });
 
-router.post("/:id/processing", documentUpload.fields([
-    { name: 'offerLetterFile', maxCount: 1 },
-    { name: 'confirmationInvoiceFile', maxCount: 1 },
-    { name: 'embassyAppointmentFile', maxCount: 1 },
-]), async (req, res) => {
+router.post("/:id/processing",
+//     documentUpload.fields([
+//     { name: 'offerLetterFile', maxCount: 1 },
+//     { name: 'confirmationInvoiceFile', maxCount: 1 },
+//     { name: 'embassyAppointmentFile', maxCount: 1 },
+// ]),
+    async (req, res) => {
     try {
         const {
             status,
