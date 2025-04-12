@@ -15,11 +15,13 @@ router.post("/", upload.single("image"), async (req, res) => {
             return res.status(400).json({ message: "Branch name and city are required" });
         }
 
+        const imageUrl = req.fileUrls ? req.fileUrls[0] : "";
+
         const newBranch = await Branch.create({
             name,
             city,
             phoneNumber,
-            image: `/images/${req.file.filename}` // Save file path
+            image: imageUrl, // Save file path
         });
 
         res.status(201).json(newBranch);
