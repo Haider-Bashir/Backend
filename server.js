@@ -17,25 +17,25 @@ const app = express();
 
 app.use(express.json());
 
-const allowedOrigins = [
-  "https://therisersconsultancy.com",      
-  "http://localhost:3000"                  
-];
+const corsOptions = {
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      "https://therisersconsultancy.com",
+      "https://www.therisersconsultancy.com",
+      "http://localhost:3000"
+    ];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
+app.use(cors(corsOptions));             
+app.options("*", cors(corsOptions));    
 
-app.options('*', cors());
 
 app.use(express.urlencoded({ extended: true }));
 
