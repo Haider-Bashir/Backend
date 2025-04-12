@@ -16,12 +16,26 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
+
+const allowedOrigins = [
+  "https://therisersconsultancy.com",      
+  "http://localhost:3000"                  
+];
+
 app.use(
   cors({
-    origin: ["https://therisersconsultancy.com"], // 👈 allow frontend domain
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
+
+
 app.use(express.urlencoded({ extended: true }));
 
 // MongoDB connection
