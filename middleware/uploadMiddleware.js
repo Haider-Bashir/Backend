@@ -1,46 +1,55 @@
+const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
+const fs = require("fs");
 const path = require("path");
 
-// Cloudinary configuration
+// Setup Cloudinary
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME, // Add your Cloudinary cloud name
-    api_key: process.env.CLOUDINARY_API_KEY, // Add your Cloudinary API key
-    api_secret: process.env.CLOUDINARY_API_SECRET, // Add your Cloudinary API secret
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// File validation for images, PDFs, and Word files
-const fileFilter = (req, file, cb) => {
-    const allowedFileTypes = /jpeg|jpg|png|pdf|doc|docx/;
-    const extName = allowedFileTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimeType = allowedFileTypes.test(file.mimetype);
+// Multer config (temp local save)
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, "temp/"),
+    filename: (req, file, cb) =>
+        cb(null, `${Date.now()}-${file.originalname}`),
+});
 
-    if (extName && mimeType) {
-        return cb(null, true);
-    }
-    cb("Error: Only JPEG, JPG, PNG, PDF, DOC, DOCX files are allowed!");
+const fileFilter = (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|pdf|doc|docx/;
+    const ext = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mime = allowedTypes.test(file.mimetype);
+    if (ext && mime) cb(null, true);
+    else cb("Only image, PDF, and Word files are allowed!");
 };
 
-const upload = (req, res, next) => {
-    // If files are present, upload them to Cloudinary
-    if (req.files) {
-        const promises = req.files.map(file => {
-            return cloudinary.uploader.upload(file.path, {
-                resource_type: file.mimetype.startsWith("image") ? "image" : "raw", // images vs files (PDF, DOC)
-            });
+const upload = multer({ storage, fileFilter });
+
+// Middleware to handle single file upload + Cloudinary upload
+const uploadToCloudinary = async (req, res, next) => {
+    if (!req.file) return next();
+
+    try {
+        const filePath = req.file.path;
+        const resourceType = req.file.mimetype.startsWith("image") ? "image" : "raw";
+
+        const result = await cloudinary.uploader.upload(filePath, {
+            resource_type: resourceType,
         });
 
-        // Wait for all uploads to complete
-        Promise.all(promises)
-            .then(results => {
-                req.fileUrls = results.map(result => result.secure_url); // Store URLs of uploaded files
-                next();
-            })
-            .catch(error => {
-                res.status(500).json({ message: "Error uploading files to Cloudinary", error });
-            });
-    } else {
+        // Clean up local temp file
+        fs.unlinkSync(filePath);
+
+        req.fileUrl = result.secure_url;
         next();
+    } catch (err) {
+        return res.status(500).json({ message: "Cloudinary upload failed", error: err });
     }
 };
 
-module.exports = upload;
+module.exports = {
+    uploadSingle: upload.single("image"), // used in route
+    uploadToCloudinary, // used in route
+};

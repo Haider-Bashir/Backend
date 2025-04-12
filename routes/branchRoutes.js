@@ -2,26 +2,24 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const Branch = require("../models/branch");
-const upload = require("../middleware/uploadMiddleware");
+const { uploadSingle, uploadToCloudinary } = require("../middleware/uploadMiddleware");
 const Payment = require("../models/Payment");
 const Applicant = require("../models/Applicant");
 
 // @desc    Add new branch
 // @route   POST /api/branches
-router.post("/", upload.single("image"), async (req, res) => {
+router.post("/", uploadSingle, uploadToCloudinary, async (req, res) => {
     try {
         const { name, city, phoneNumber } = req.body;
         if (!name || !city) {
             return res.status(400).json({ message: "Branch name and city are required" });
         }
 
-        const imageUrl = req.fileUrls ? req.fileUrls[0] : "";
-
         const newBranch = await Branch.create({
             name,
             city,
             phoneNumber,
-            image: imageUrl, // Save file path
+            image: req.fileUrl, // Save file path
         });
 
         res.status(201).json(newBranch);
