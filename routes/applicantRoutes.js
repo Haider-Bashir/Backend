@@ -8,34 +8,12 @@ const path = require("path");
 const fs = require("fs");
 const { protect } = require("../middleware/authMiddleware");
 const Branch = require("../models/branch");
-
-// Configure Storage for Image Uploads
-const imageStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "public/images/applicants");
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
-    },
-});
-const imageUpload = multer({ storage: imageStorage });
-
-// Configure Storage for Document Uploads
-const documentStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "public/documents/applicants");
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
-    },
-});
-
-const documentUpload = multer({ storage: documentStorage });
+const { uploadToCloudinary } = require("../middleware/uploadMiddleware");
 
 // @desc    Create a new applicant
 // @route   POST /api/applicants
 // @access  Manager/Admin (Managers can only create applicants for their branch)
-router.post("/", protect, imageUpload.single("photo"), async (req, res) => {
+router.post("/", protect, uploadToCloudinary("photo"), async (req, res) => {
     try {
         if (!req.user) {
             return res.status(401).json({ message: "Unauthorized - User not found" });
@@ -77,7 +55,7 @@ router.post("/", protect, imageUpload.single("photo"), async (req, res) => {
             counselor,
             visaType,
             branchId, // 🔹 Assign branchId
-            photo: req.file ? `/images/applicants/${req.file.filename}` : null,
+            photo: req.fileUrl || null,
         });
 
         await newApplicant.save();
@@ -92,7 +70,7 @@ router.post("/", protect, imageUpload.single("photo"), async (req, res) => {
 
 // @desc Upload a new document for an applicant
 // @route POST /api/applicants/:id/documents
-router.post("/:id/documents", documentUpload.single("document"), async (req, res) => {
+router.post("/:id/documents", uploadToCloudinary("document"), async (req, res) => {
     try {
         const { title } = req.body;
         if (!title) {
@@ -107,7 +85,7 @@ router.post("/:id/documents", documentUpload.single("document"), async (req, res
         const newDocument = {
             _id: new mongoose.Types.ObjectId(),
             title,
-            path: `/documents/applicants/${req.file.filename}`,
+            path: req.fileUrl || null,
         };
 
         applicant.documents.push(newDocument);
@@ -156,11 +134,11 @@ router.get("/:id", async (req, res) => {
 
 // @desc    Update an applicant
 // @route   PUT /api/applicants/:id
-router.put("/:id", imageUpload.single("photo"), async (req, res) => {
+router.put("/:id", uploadToCloudinary("photo"), async (req, res) => {
     try {
         const { name, cnic, phoneNumber, city, address, country, qualification, counselor, visaType } = req.body;
 
-        let photo = req.file ? req.file.path : req.body.photo; // If file is uploaded, use the file path, else use the existing path
+        let photo = req.fileUrl || req.body.photo || null; // If file is uploaded, use the file path, else use the existing path
 
         // Remove 'public' from the path and replace backslashes with forward slashes
         if (photo && photo.includes('public')) {

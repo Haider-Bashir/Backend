@@ -89,7 +89,7 @@ router.put("/:id/assignManager", async (req, res) => {
 
 // @desc    Edit branch details
 // @route   PUT /api/branches/:id
-router.put("/:id", upload.single("image"), async (req, res) => {
+router.put("/:id", uploadSingle, uploadToCloudinary, async (req, res) => {
     try {
         const { name, city, phoneNumber } = req.body;
         const branch = await Branch.findById(req.params.id);

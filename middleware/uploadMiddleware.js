@@ -3,14 +3,14 @@ const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
 const path = require("path");
 
-// Setup Cloudinary
+// Cloudinary Config
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Multer config (temp local save)
+// Setup multer to store files in temp/
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, "temp/"),
     filename: (req, file, cb) =>
@@ -22,34 +22,32 @@ const fileFilter = (req, file, cb) => {
     const ext = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mime = allowedTypes.test(file.mimetype);
     if (ext && mime) cb(null, true);
-    else cb("Only image, PDF, and Word files are allowed!");
+    else cb("Only images, PDF, and Word documents are allowed!");
 };
 
 const upload = multer({ storage, fileFilter });
 
-// Middleware to handle single file upload + Cloudinary upload
-const uploadToCloudinary = async (req, res, next) => {
-    if (!req.file) return next();
+// Middleware for file upload to Cloudinary
+const uploadToCloudinary = (fieldName) => [
+    upload.single(fieldName),
+    async (req, res, next) => {
+        if (!req.file) return next();
 
-    try {
-        const filePath = req.file.path;
-        const resourceType = req.file.mimetype.startsWith("image") ? "image" : "raw";
+        try {
+            const resourceType = req.file.mimetype.startsWith("image") ? "image" : "raw";
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                resource_type: resourceType,
+            });
 
-        const result = await cloudinary.uploader.upload(filePath, {
-            resource_type: resourceType,
-        });
-
-        // Clean up local temp file
-        fs.unlinkSync(filePath);
-
-        req.fileUrl = result.secure_url;
-        next();
-    } catch (err) {
-        return res.status(500).json({ message: "Cloudinary upload failed", error: err });
-    }
-};
+            fs.unlinkSync(req.file.path); // Clean up temp file
+            req.fileUrl = result.secure_url;
+            next();
+        } catch (err) {
+            return res.status(500).json({ message: "Cloudinary upload failed", error: err });
+        }
+    },
+];
 
 module.exports = {
-    uploadSingle: upload.single("image"), // used in route
-    uploadToCloudinary, // used in route
+    uploadToCloudinary,
 };
