@@ -84,7 +84,7 @@ const deleteFromCloudinary = async (fileUrl) => {
         const folder = fileUrl.includes("documents") ? "documents/applicants" : ""; // adjust based on your setup
         const fullPublicId = folder ? `${folder}/${publicId}` : publicId;
 
-        await cloudinary.uploader.destroy(fullPublicId, { resource_type: "auto" });
+        await cloudinary.uploader.destroy(fullPublicId, { resource_type: "raw" });
     } catch (err) {
         console.error("Failed to delete from Cloudinary:", err);
     }
