@@ -273,6 +273,7 @@ router.post("/:id/processing",
         } = req.body;
 
         const applicantId = req.params.id;
+        const cloudFiles = req.cloudinaryFiles || {};
 
         const applicant = await Applicant.findById(applicantId);
         if (!applicant) {
@@ -283,28 +284,28 @@ router.post("/:id/processing",
         const existingProcessing = applicant.processing[0]; // Assuming only one processing object exists
 
         // Build new file info from uploaded files or fallback to request body
-        const offerLetterFilePathz = req.cloudinaryFiles['offerLetterFile']
-            ? req.cloudinaryFiles['offerLetterFile'][0].path
+        const offerLetterFilePathz = cloudFiles['offerLetterFile']
+            ? cloudFiles['offerLetterFile'][0].path
             : offerLetterFilePath || null;
 
-        const offerLetterFileNamez = req.cloudinaryFiles['offerLetterFile']
-            ? req.cloudinaryFiles['offerLetterFile'][0].originalname
+        const offerLetterFileNamez = cloudFiles['offerLetterFile']
+            ? cloudFiles['offerLetterFile'][0].originalname
             : offerLetterFileName || null;
 
-        const confirmationInvoiceFilePathz = req.cloudinaryFiles['confirmationInvoiceFile']
-            ? req.cloudinaryFiles['confirmationInvoiceFile'][0].path
+        const confirmationInvoiceFilePathz = cloudFiles['confirmationInvoiceFile']
+            ? cloudFiles['confirmationInvoiceFile'][0].path
             : confirmationInvoiceFilePath || null;
 
-        const confirmationInvoiceFileNamez = req.cloudinaryFiles['confirmationInvoiceFile']
-            ? req.cloudinaryFiles['confirmationInvoiceFile'][0].originalname
+        const confirmationInvoiceFileNamez = cloudFiles['confirmationInvoiceFile']
+            ? cloudFiles['confirmationInvoiceFile'][0].originalname
             : confirmationInvoiceFileName || null;
 
-        const embassyAppointmentFilePathz = req.cloudinaryFiles['embassyAppointmentFile']
-            ? req.cloudinaryFiles['embassyAppointmentFile'][0].path
+        const embassyAppointmentFilePathz = cloudFiles['embassyAppointmentFile']
+            ? cloudFiles['embassyAppointmentFile'][0].path
             : embassyAppointmentFilePath || null;
 
-        const embassyAppointmentFileNamez = req.cloudinaryFiles['embassyAppointmentFile']
-            ? req.cloudinaryFiles['embassyAppointmentFile'][0].originalname
+        const embassyAppointmentFileNamez = cloudFiles['embassyAppointmentFile']
+            ? cloudFiles['embassyAppointmentFile'][0].originalname
             : embassyAppointmentFileName || null;
 
         if (existingProcessing) {
