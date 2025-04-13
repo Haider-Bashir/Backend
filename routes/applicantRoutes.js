@@ -289,7 +289,7 @@ router.post("/:id/processing",
             : offerLetterFilePath || null;
 
         const offerLetterFileNamez = cloudFiles['offerLetterFile']
-            ? cloudFiles['offerLetterFile'][0].originalname
+            ? cloudFiles['offerLetterFile'][0].name
             : offerLetterFileName || null;
 
         const confirmationInvoiceFilePathz = cloudFiles['confirmationInvoiceFile']
@@ -297,7 +297,7 @@ router.post("/:id/processing",
             : confirmationInvoiceFilePath || null;
 
         const confirmationInvoiceFileNamez = cloudFiles['confirmationInvoiceFile']
-            ? cloudFiles['confirmationInvoiceFile'][0].originalname
+            ? cloudFiles['confirmationInvoiceFile'][0].name
             : confirmationInvoiceFileName || null;
 
         const embassyAppointmentFilePathz = cloudFiles['embassyAppointmentFile']
@@ -305,7 +305,7 @@ router.post("/:id/processing",
             : embassyAppointmentFilePath || null;
 
         const embassyAppointmentFileNamez = cloudFiles['embassyAppointmentFile']
-            ? cloudFiles['embassyAppointmentFile'][0].originalname
+            ? cloudFiles['embassyAppointmentFile'][0].name
             : embassyAppointmentFileName || null;
 
         if (existingProcessing) {
