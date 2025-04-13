@@ -103,7 +103,7 @@ router.put("/:id", uploadToCloudinary("image"), async (req, res) => {
         branch.phoneNumber = phoneNumber || branch.phoneNumber;
 
         if (req.file) {
-            branch.image = `/images/${req.file.filename}`; // Update image if provided
+            branch.image = req.fileUrl; // Update image if provided
         }
 
         await branch.save();
