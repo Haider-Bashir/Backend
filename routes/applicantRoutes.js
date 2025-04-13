@@ -284,27 +284,27 @@ router.post("/:id/processing",
 
         // Build new file info from uploaded files or fallback to request body
         const offerLetterFilePathz = req.files['offerLetterFile']
-            ? req.files['offerLetterFile'][0].path
+            ? req.cloudinaryFiles['offerLetterFile'][0].path
             : offerLetterFilePath || null;
 
         const offerLetterFileNamez = req.files['offerLetterFile']
-            ? req.files['offerLetterFile'][0].originalname
+            ? req.cloudinaryFiles['offerLetterFile'][0].originalname
             : offerLetterFileName || null;
 
         const confirmationInvoiceFilePathz = req.files['confirmationInvoiceFile']
-            ? req.files['confirmationInvoiceFile'][0].path
+            ? req.cloudinaryFiles['confirmationInvoiceFile'][0].path
             : confirmationInvoiceFilePath || null;
 
         const confirmationInvoiceFileNamez = req.files['confirmationInvoiceFile']
-            ? req.files['confirmationInvoiceFile'][0].originalname
+            ? req.cloudinaryFiles['confirmationInvoiceFile'][0].originalname
             : confirmationInvoiceFileName || null;
 
         const embassyAppointmentFilePathz = req.files['embassyAppointmentFile']
-            ? req.files['embassyAppointmentFile'][0].path
+            ? req.cloudinaryFiles['embassyAppointmentFile'][0].path
             : embassyAppointmentFilePath || null;
 
         const embassyAppointmentFileNamez = req.files['embassyAppointmentFile']
-            ? req.files['embassyAppointmentFile'][0].originalname
+            ? req.cloudinaryFiles['embassyAppointmentFile'][0].originalname
             : embassyAppointmentFileName || null;
 
         if (existingProcessing) {
