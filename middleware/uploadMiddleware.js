@@ -1,6 +1,7 @@
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
 const streamifier = require("streamifier");
+const path = require("path");
 require("dotenv").config();
 
 // Cloudinary Config
@@ -10,9 +11,10 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Use memory storage instead of writing to temp/ folder
+// Use memory storage
 const storage = multer.memoryStorage();
 
+// File validation
 const fileFilter = (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|pdf|doc|docx/;
     const ext = allowedTypes.test(file.originalname.toLowerCase());
@@ -23,7 +25,7 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ storage, fileFilter });
 
-// Middleware for file upload to Cloudinary
+// Upload to Cloudinary Middleware
 const uploadToCloudinary = (fieldName) => [
     upload.single(fieldName),
     async (req, res, next) => {
@@ -31,27 +33,26 @@ const uploadToCloudinary = (fieldName) => [
 
         try {
             const mime = req.file.mimetype;
+            const originalExt = path.extname(req.file.originalname); // e.g., .pdf
+            const baseName = path.basename(req.file.originalname, originalExt); // e.g., "resume"
 
-            // Determine the resource type for Cloudinary
-            let resourceType = "raw";
+            // Determine resource type
+            const isImage = mime.startsWith("image/");
+            const resourceType = isImage ? "image" : "raw";
 
-            if (mime.startsWith("image/")) {
-                resourceType = "image";
-            } else if (
-                mime === "application/pdf" ||
-                mime === "application/msword" ||
-                mime.includes("officedocument")
-            ) {
-                resourceType = "raw";
-            }
+            // Choose folder based on file type
+            const folder = isImage ? "applicants/images" : "applicants/documents";
 
-            // Upload stream to Cloudinary
             const streamUpload = () => {
                 return new Promise((resolve, reject) => {
                     const stream = cloudinary.uploader.upload_stream(
                         {
                             resource_type: resourceType,
-                            folder: "applicants/documents", // optional folder in Cloudinary
+                            folder: folder,
+                            public_id: baseName,
+                            format: originalExt.replace(".", ""), // keep proper format (pdf, docx)
+                            use_filename: true,
+                            unique_filename: true,
                         },
                         (error, result) => {
                             if (result) resolve(result);
@@ -62,11 +63,15 @@ const uploadToCloudinary = (fieldName) => [
                 });
             };
 
-            const result = await streamUpload(req);
+            const result = await streamUpload();
             req.fileUrl = result.secure_url;
             next();
         } catch (err) {
-            return res.status(500).json({ message: "Cloudinary upload failed", error: err });
+            console.error("Cloudinary upload failed:", err);
+            return res.status(500).json({
+                message: "Cloudinary upload failed",
+                error: err.message || err,
+            });
         }
     },
 ];
