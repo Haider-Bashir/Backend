@@ -1,7 +1,7 @@
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
-const fs = require("fs");
-const path = require("path");
+const streamifier = require("streamifier");
+require("dotenv").config();
 
 // Cloudinary Config
 cloudinary.config({
@@ -10,16 +10,12 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Setup multer to store files in temp/
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, "temp/"),
-    filename: (req, file, cb) =>
-        cb(null, `${Date.now()}-${file.originalname}`),
-});
+// Use memory storage instead of writing to temp/ folder
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|pdf|doc|docx/;
-    const ext = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const ext = allowedTypes.test(file.originalname.toLowerCase());
     const mime = allowedTypes.test(file.mimetype);
     if (ext && mime) cb(null, true);
     else cb("Only images, PDF, and Word documents are allowed!");
@@ -34,12 +30,20 @@ const uploadToCloudinary = (fieldName) => [
         if (!req.file) return next();
 
         try {
-            const resourceType = req.file.mimetype.startsWith("image") ? "image" : "raw";
-            const result = await cloudinary.uploader.upload(req.file.path, {
-                resource_type: resourceType,
-            });
+            const streamUpload = (req) => {
+                return new Promise((resolve, reject) => {
+                    const stream = cloudinary.uploader.upload_stream(
+                        { resource_type: req.file.mimetype.startsWith("image") ? "image" : "raw" },
+                        (error, result) => {
+                            if (result) resolve(result);
+                            else reject(error);
+                        }
+                    );
+                    streamifier.createReadStream(req.file.buffer).pipe(stream);
+                });
+            };
 
-            fs.unlinkSync(req.file.path); // Clean up temp file
+            const result = await streamUpload(req);
             req.fileUrl = result.secure_url;
             next();
         } catch (err) {

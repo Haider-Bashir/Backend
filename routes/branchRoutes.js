@@ -8,7 +8,7 @@ const Applicant = require("../models/Applicant");
 
 // @desc    Add new branch
 // @route   POST /api/branches
-router.post("/", uploadToCloudinary, async (req, res) => {
+router.post("/", uploadToCloudinary("image"), async (req, res) => {
     try {
         const { name, city, phoneNumber } = req.body;
         if (!name || !city) {
