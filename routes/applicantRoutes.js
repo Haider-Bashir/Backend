@@ -10,6 +10,8 @@ const { protect } = require("../middleware/authMiddleware");
 const Branch = require("../models/branch");
 const { uploadToCloudinary } = require("../middleware/uploadMiddleware");
 const { deleteFromCloudinary, extractPublicId } = require("../utils/cloudinary");
+const uploadMultipleToCloudinary = require("../middleware/uploadMultipleToCloudinary");
+
 
 // @desc    Create a new applicant
 // @route   POST /api/applicants
@@ -245,11 +247,11 @@ router.put("/:id/education", async (req, res) => {
 });
 
 router.post("/:id/processing",
-//     documentUpload.fields([
-//     { name: 'offerLetterFile', maxCount: 1 },
-//     { name: 'confirmationInvoiceFile', maxCount: 1 },
-//     { name: 'embassyAppointmentFile', maxCount: 1 },
-// ]),
+    uploadMultipleToCloudinary.fields([
+    { name: 'offerLetterFile', maxCount: 1 },
+    { name: 'confirmationInvoiceFile', maxCount: 1 },
+    { name: 'embassyAppointmentFile', maxCount: 1 },
+]),
     async (req, res) => {
     try {
         const {
