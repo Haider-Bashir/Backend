@@ -376,10 +376,10 @@ router.post("/:id/processing",
         }
 
         // Handle processing notes
-        const newProcessingNotes = processingNotes.map((note) => ({
+        const newProcessingNotes = Array.isArray(processingNotes) ? processingNotes.map((note) => ({
             note: note.note,
             saveTime: note.saveTime || new Date(),
-        }));
+        })) : [];
 
         const uniqueNotes = [
             ...new Set([
