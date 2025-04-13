@@ -30,10 +30,29 @@ const uploadToCloudinary = (fieldName) => [
         if (!req.file) return next();
 
         try {
-            const streamUpload = (req) => {
+            const mime = req.file.mimetype;
+
+            // Determine the resource type for Cloudinary
+            let resourceType = "raw";
+
+            if (mime.startsWith("image/")) {
+                resourceType = "image";
+            } else if (
+                mime === "application/pdf" ||
+                mime === "application/msword" ||
+                mime.includes("officedocument")
+            ) {
+                resourceType = "raw";
+            }
+
+            // Upload stream to Cloudinary
+            const streamUpload = () => {
                 return new Promise((resolve, reject) => {
                     const stream = cloudinary.uploader.upload_stream(
-                        { resource_type: req.file.mimetype.startsWith("image") ? "image" : "raw" },
+                        {
+                            resource_type: resourceType,
+                            folder: "applicants/documents", // optional folder in Cloudinary
+                        },
                         (error, result) => {
                             if (result) resolve(result);
                             else reject(error);
