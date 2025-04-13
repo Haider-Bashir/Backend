@@ -285,7 +285,7 @@ router.post("/:id/processing",
 
         // Build new file info from uploaded files or fallback to request body
         const offerLetterFilePathz = cloudFiles['offerLetterFile']
-            ? cloudFiles['offerLetterFile'][0].path
+            ? cloudFiles['offerLetterFile'][0].url
             : offerLetterFilePath || null;
 
         const offerLetterFileNamez = cloudFiles['offerLetterFile']
@@ -293,7 +293,7 @@ router.post("/:id/processing",
             : offerLetterFileName || null;
 
         const confirmationInvoiceFilePathz = cloudFiles['confirmationInvoiceFile']
-            ? cloudFiles['confirmationInvoiceFile'][0].path
+            ? cloudFiles['confirmationInvoiceFile'][0].url
             : confirmationInvoiceFilePath || null;
 
         const confirmationInvoiceFileNamez = cloudFiles['confirmationInvoiceFile']
@@ -301,7 +301,7 @@ router.post("/:id/processing",
             : confirmationInvoiceFileName || null;
 
         const embassyAppointmentFilePathz = cloudFiles['embassyAppointmentFile']
-            ? cloudFiles['embassyAppointmentFile'][0].path
+            ? cloudFiles['embassyAppointmentFile'][0].url
             : embassyAppointmentFilePath || null;
 
         const embassyAppointmentFileNamez = cloudFiles['embassyAppointmentFile']
