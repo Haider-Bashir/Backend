@@ -50,6 +50,7 @@ const uploadToCloudinary = (fieldName) => [
                             resource_type: resourceType,
                             folder: folder,
                             public_id: baseName,
+                            format: originalExt.replace(".", ""), // keep proper format (pdf, docx)
                             use_filename: true,
                             unique_filename: true,
                         },
