@@ -8,7 +8,7 @@ const Applicant = require("../models/Applicant");
 
 // @desc    Add new branch
 // @route   POST /api/branches
-router.post("/", uploadToCloudinary, async (req, res) => {
+router.post("/", uploadToCloudinary("image"), async (req, res) => {
     try {
         const { name, city, phoneNumber } = req.body;
         if (!name || !city) {
@@ -89,7 +89,7 @@ router.put("/:id/assignManager", async (req, res) => {
 
 // @desc    Edit branch details
 // @route   PUT /api/branches/:id
-router.put("/:id", uploadToCloudinary, async (req, res) => {
+router.put("/:id", uploadToCloudinary("image"), async (req, res) => {
     try {
         const { name, city, phoneNumber } = req.body;
         const branch = await Branch.findById(req.params.id);
