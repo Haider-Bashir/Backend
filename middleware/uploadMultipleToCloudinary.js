@@ -72,4 +72,25 @@ const uploadMultipleToCloudinary = (fieldsArray) => [
     },
 ];
 
-module.exports = uploadMultipleToCloudinary;
+const deleteFromCloudinary = async (fileUrl) => {
+    try {
+        if (!fileUrl) return;
+
+        const publicId = fileUrl
+            .split("/")
+            .slice(-1)[0]
+            .split(".")[0];
+
+        const folder = fileUrl.includes("documents") ? "documents/applicants" : ""; // adjust based on your setup
+        const fullPublicId = folder ? `${folder}/${publicId}` : publicId;
+
+        await cloudinary.uploader.destroy(fullPublicId, { resource_type: "auto" });
+    } catch (err) {
+        console.error("Failed to delete from Cloudinary:", err);
+    }
+};
+
+module.exports = {
+    deleteFromCloudinary,
+    uploadMultipleToCloudinary
+};

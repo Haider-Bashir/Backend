@@ -8,8 +8,8 @@ const fs = require("fs");
 const { protect } = require("../middleware/authMiddleware");
 const Branch = require("../models/branch");
 const { uploadToCloudinary } = require("../middleware/uploadMiddleware");
-const { deleteFromCloudinary, extractPublicId } = require("../utils/cloudinary");
-const uploadMultipleToCloudinary = require("../middleware/uploadMultipleToCloudinary");
+const { extractPublicId } = require("../utils/cloudinary");
+const {uploadMultipleToCloudinary, deleteFromCloudinary} = require("../middleware/uploadMultipleToCloudinary");
 
 
 // @desc    Create a new applicant
@@ -309,30 +309,30 @@ router.post("/:id/processing",
         if (existingProcessing) {
 
             // Delete old file before saving new file (if file paths are different)
-            if (req.files['offerLetterFile']) {
-                const oldOfferLetterPath = path.join(__dirname, '..', 'public', existingProcessing.offerLetterFilePath);
-
-                if (fs.existsSync(oldOfferLetterPath) && existingProcessing.offerLetterFilePath !== offerLetterFilePathz) {
-                    fs.unlinkSync(oldOfferLetterPath);
-                }
+            if (
+                req.files['offerLetterFile'] &&
+                existingProcessing.offerLetterFilePath &&
+                existingProcessing.offerLetterFilePath !== offerLetterFilePathz
+            ) {
+                await deleteFromCloudinary(existingProcessing.offerLetterFilePath);
             }
 
             // Delete the old confirmationInvoiceFile if it exists and is different
-            if (req.files['confirmationInvoiceFile']) {
-                const oldConfirmationInvoicePath = path.join(__dirname, '..', 'public', existingProcessing.confirmationInvoiceFilePath);
-
-                if (fs.existsSync(oldConfirmationInvoicePath) && existingProcessing.confirmationInvoiceFilePath !== confirmationInvoiceFilePathz) {
-                    fs.unlinkSync(oldConfirmationInvoicePath);
-                }
+            if (
+                req.files['confirmationInvoiceFile'] &&
+                existingProcessing.confirmationInvoiceFilePath &&
+                existingProcessing.confirmationInvoiceFilePath !== confirmationInvoiceFilePathz
+            ) {
+                await deleteFromCloudinary(existingProcessing.confirmationInvoiceFilePath);
             }
 
             // Delete the old embassyAppointmentFile if it exists and is different
-            if (req.files['embassyAppointmentFile']) {
-                const oldEmbassyAppointmentPath = path.join(__dirname, '..', 'public', existingProcessing.embassyAppointmentFilePath);
-
-                if (fs.existsSync(oldEmbassyAppointmentPath) && existingProcessing.embassyAppointmentFilePath !== embassyAppointmentFilePathz) {
-                    fs.unlinkSync(oldEmbassyAppointmentPath);
-                }
+            if (
+                req.files['embassyAppointmentFile'] &&
+                existingProcessing.embassyAppointmentFilePath &&
+                existingProcessing.embassyAppointmentFilePath !== embassyAppointmentFilePathz
+            ) {
+                await deleteFromCloudinary(existingProcessing.embassyAppointmentFilePath);
             }
 
             // Update the processing data without adding new objects
