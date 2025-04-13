@@ -9,6 +9,7 @@ const fs = require("fs");
 const { protect } = require("../middleware/authMiddleware");
 const Branch = require("../models/branch");
 const { uploadToCloudinary } = require("../middleware/uploadMiddleware");
+const { deleteFromCloudinary, extractPublicId } = require("../utils/cloudinary");
 
 // @desc    Create a new applicant
 // @route   POST /api/applicants
@@ -136,9 +137,16 @@ router.get("/:id", async (req, res) => {
 // @route   PUT /api/applicants/:id
 router.put("/:id", uploadToCloudinary("photo"), async (req, res) => {
     try {
+        const applicant = await Applicant.findById(req.params.id);
         const { name, cnic, phoneNumber, city, address, country, qualification, counselor, visaType } = req.body;
 
-        let photo = req.fileUrl || req.body.photo || null; // If file is uploaded, use the file path, else use the existing path
+        // Delete old photo if a new one was uploaded
+        if (req.fileUrl && applicant.photo) {
+            const oldPublicId = extractPublicId(applicant.photo);
+            await deleteFromCloudinary(oldPublicId, "image");
+        }
+
+        let photo = req.fileUrl || req.body.photo || null;
 
         // Remove 'public' from the path and replace backslashes with forward slashes
         if (photo && photo.includes('public')) {
