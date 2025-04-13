@@ -20,7 +20,6 @@ const generateUniqueUsername = async (firstName, lastName) => {
 
 // Register a Manager
 const registerManager = async (req, res) => {
-    console.log(req.body);
     const { firstName, lastName, email, password, confirmPassword, address, phoneNumber, city } = req.body;
 
     try {
