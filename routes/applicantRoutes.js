@@ -272,31 +272,6 @@ router.post("/:id/processing",
             embassyAppointmentFilePath,
         } = req.body;
 
-        // Handle upload or existing paths and names for files
-        const offerLetterFilePathz = req.files['offerLetterFile']
-            ? `/documents/applicants/${req.files['offerLetterFile'][0].filename}`  // If a new file uploaded
-            : req.body.offerLetterFilePath || null;  // Else use the existing file path from the database
-
-        const offerLetterFileNamez = req.files['offerLetterFile']
-            ? req.files['offerLetterFile'][0].filename
-            : req.body.offerLetterFileName || null;
-
-        const confirmationInvoiceFilePathz = req.files['confirmationInvoiceFile']
-            ? `/documents/applicants/${req.files['confirmationInvoiceFile'][0].filename}`
-            : req.body.confirmationInvoiceFilePath || null;
-
-        const confirmationInvoiceFileNamez = req.files['confirmationInvoiceFile']
-            ? req.files['confirmationInvoiceFile'][0].filename
-            : req.body.confirmationInvoiceFileName || null;
-
-        const embassyAppointmentFilePathz = req.files['embassyAppointmentFile']
-            ? `/documents/applicants/${req.files['embassyAppointmentFile'][0].filename}`
-            : req.body.embassyAppointmentFilePath || null;
-
-        const embassyAppointmentFileNamez = req.files['embassyAppointmentFile']
-            ? req.files['embassyAppointmentFile'][0].filename
-            : req.body.embassyAppointmentFileName || null;
-
         const applicantId = req.params.id;
 
         const applicant = await Applicant.findById(applicantId);
@@ -306,8 +281,33 @@ router.post("/:id/processing",
 
         // Check if processing data exists
         const existingProcessing = applicant.processing[0]; // Assuming only one processing object exists
-        if (existingProcessing) {
 
+        // Build new file info from uploaded files or fallback to request body
+        const offerLetterFilePathz = req.files['offerLetterFile']
+            ? req.files['offerLetterFile'][0].path
+            : offerLetterFilePath || null;
+
+        const offerLetterFileNamez = req.files['offerLetterFile']
+            ? req.files['offerLetterFile'][0].originalname
+            : offerLetterFileName || null;
+
+        const confirmationInvoiceFilePathz = req.files['confirmationInvoiceFile']
+            ? req.files['confirmationInvoiceFile'][0].path
+            : confirmationInvoiceFilePath || null;
+
+        const confirmationInvoiceFileNamez = req.files['confirmationInvoiceFile']
+            ? req.files['confirmationInvoiceFile'][0].originalname
+            : confirmationInvoiceFileName || null;
+
+        const embassyAppointmentFilePathz = req.files['embassyAppointmentFile']
+            ? req.files['embassyAppointmentFile'][0].path
+            : embassyAppointmentFilePath || null;
+
+        const embassyAppointmentFileNamez = req.files['embassyAppointmentFile']
+            ? req.files['embassyAppointmentFile'][0].originalname
+            : embassyAppointmentFileName || null;
+
+        if (existingProcessing) {
             // Delete old file before saving new file (if file paths are different)
             if (
                 req.files['offerLetterFile'] &&
