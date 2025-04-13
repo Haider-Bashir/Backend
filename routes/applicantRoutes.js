@@ -315,7 +315,7 @@ router.post("/:id/processing",
                 existingProcessing.offerLetterFilePath &&
                 existingProcessing.offerLetterFilePath !== offerLetterFilePathz
             ) {
-                await deleteFromCloudinary(existingProcessing.offerLetterFilePath);
+                await deleteFromCloudinary(existingProcessing.offerLetterFilePath, "raw");
             }
 
             // Delete the old confirmationInvoiceFile if it exists and is different
@@ -324,7 +324,7 @@ router.post("/:id/processing",
                 existingProcessing.confirmationInvoiceFilePath &&
                 existingProcessing.confirmationInvoiceFilePath !== confirmationInvoiceFilePathz
             ) {
-                await deleteFromCloudinary(existingProcessing.confirmationInvoiceFilePath);
+                await deleteFromCloudinary(existingProcessing.confirmationInvoiceFilePath, "raw");
             }
 
             // Delete the old embassyAppointmentFile if it exists and is different
@@ -333,7 +333,7 @@ router.post("/:id/processing",
                 existingProcessing.embassyAppointmentFilePath &&
                 existingProcessing.embassyAppointmentFilePath !== embassyAppointmentFilePathz
             ) {
-                await deleteFromCloudinary(existingProcessing.embassyAppointmentFilePath);
+                await deleteFromCloudinary(existingProcessing.embassyAppointmentFilePath, "raw");
             }
 
             // Update the processing data without adding new objects
