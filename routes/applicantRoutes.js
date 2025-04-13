@@ -1,7 +1,6 @@
 const express = require("express");
 const Applicant = require("../models/Applicant");
 const Payment = require("../models/Payment");
-const multer = require("multer");
 const mongoose = require("mongoose");
 const router = express.Router();
 const path = require("path");
@@ -247,7 +246,7 @@ router.put("/:id/education", async (req, res) => {
 });
 
 router.post("/:id/processing",
-    uploadMultipleToCloudinary.fields([
+    uploadMultipleToCloudinary([
     { name: 'offerLetterFile', maxCount: 1 },
     { name: 'confirmationInvoiceFile', maxCount: 1 },
     { name: 'embassyAppointmentFile', maxCount: 1 },
